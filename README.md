@@ -5,6 +5,9 @@ This is the big one.
 
 *This is essentially the greatest Capital Management Platform to exist
 
+# Video Link:
+https://drive.google.com/drive/folders/14At8pcpP0sW0qRIdio9UO33zfrDpx2mr?usp=sharing 
+
 ## Overview
 
 Siyakhula is in its **Minimum Viable Product (MVP)** phase it demonstrates how blockchain parametric insurance can de‑risk early‑stage investments in Africa.
