@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol"; // added
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IPolicyRegistry.sol";
 import "./PremiumPool.sol";
@@ -13,6 +14,8 @@ contract PolicyRegistry is
     ReentrancyGuard,
     IPolicyRegistry
 {
+    using SafeERC20 for IERC20; // added
+
     //Very helpful for assiging fixed roles
     bytes32 public constant ADMIN_ROLE =
         keccak256("ADMIN_ROLE");
@@ -148,13 +151,11 @@ contract PolicyRegistry is
             "pool not set"
         );
 
-        require(
-            stablecoin.transferFrom(
-                msg.sender,
-                premiumPool,
-                p.premiumAmount
-            ),
-            "premium transfer failed"
+        // Use safeTransferFrom which will revert if transfer fails
+        stablecoin.safeTransferFrom(
+            msg.sender,
+            premiumPool,
+            p.premiumAmount
         );
 
         PremiumPool(premiumPool).recordPremium(
