@@ -5,12 +5,29 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 
-//RUN!!!!RUN!!!!RUN!!!!VROOM VROOM GO THE TESTING IS DEPENDING ON YOU
+//Postgre SQL initialisation for frontend processes.
 require("./config/db");
 
 const app = express();
 
-app.use(cors());
+//Securing CORS config
+const allowedOrigins = [
+    "http://localhost:5173",
+    // "https://your-frontend-domain.vercel.app" // Uncomment and add your frontend URL once deployed
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
+}));
+
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
@@ -25,12 +42,8 @@ app.use(
     require("./routes/investorRoutes")
 );
 
-const PORT =
-    process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-
-    console.log(
-        `Backend running on ${PORT}`
-    );
+    console.log(`Backend running on ${PORT}`);
 });

@@ -1,33 +1,45 @@
-const sqlite3 = require("sqlite3").verbose();
-const path = require("path");
+const { Pool } = require("pg");
+require("dotenv").config();
 
-const dbPath = path.join(
-    __dirname,
-    "../../database/siyakhula.db"
-);
-
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.log(err.message);
-    } else {
-        console.log("SQLite Connected");
+//Initialise!
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false // Required for secure cloud databases like Neon
     }
 });
 
-//If more fields are necessary we can add them later, IF they are. But records have the chain.
-db.serialize(() => {
-
-    db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE,
-            password TEXT,
-            walletAddress TEXT UNIQUE,
-            role TEXT,
-            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
-
+//Testing just for now.
+pool.connect((err, client, release) => {
+    if (err) {
+        console.error("Error acquiring client", err.stack);
+    } else {
+        console.log("PostgreSQL Connected successfully");
+        release();
+    }
 });
 
-module.exports = db;
+//User table creation
+const initializeDatabase = async () => {
+    const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE,
+            password TEXT,
+            wallet_address TEXT UNIQUE,
+            role TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
+    try {
+        await pool.query(createTableQuery);
+        console.log("Database tables verified/created.");
+    } catch (err) {
+        console.error("Error creating database tables:", err.message);
+    }
+};
+
+initializeDatabase();
+
+//Export the pool for the controllers
+module.exports = pool;
