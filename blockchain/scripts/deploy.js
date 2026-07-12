@@ -45,19 +45,21 @@ async function main() {
     console.log("Granted ADMIN_ROLE to insurer");
 
     //Minting test RWFC:
-    const amountInvestor = hre.ethers.parseUnits("5000", 18);
-    const amountInsurer = hre.ethers.parseUnits("10000000", 18);
-    await (await mockRWFC.mint(deployer.address, amountInvestor)).wait();
+    const amountInvestor = hre.ethers.parseUnits("500000", 18);      // 500,000
+    const amountDeployer = hre.ethers.parseUnits("200000000", 18);   // 200,000,000
+    const amountInsurer = hre.ethers.parseUnits("150000000", 18);    // 150,000,000
+
+    await (await mockRWFC.mint(deployer.address, amountDeployer)).wait();
     await (await mockRWFC.mint(investor1.address, amountInvestor)).wait();
     await (await mockRWFC.mint(insurer.address, amountInsurer)).wait();
     await (await mockRWFC.mint(investor3.address, amountInvestor)).wait();
     await (await mockRWFC.mint(investor4.address, amountInvestor)).wait();
-    console.log("Minted 5000 RWFC to deployer, investor1, investor3, investor4; 10,000,000 to insurer");
+    console.log("Minted 200M to deployer, 500K to each investor, 150M to insurer");
 
-    //Fund the PremiumPool with 5,000,000 RWFC from the insurer
-    const fundAmount = hre.ethers.parseUnits("5000000", 18);
+    //Fund the PremiumPool with 100,000,000 RWFC from the insurer
+    const fundAmount = hre.ethers.parseUnits("100000000", 18);      // 100,000,000
     await (await mockRWFC.connect(insurer).transfer(await premiumPool.getAddress(), fundAmount)).wait();
-    console.log("Funded PremiumPool with 5,000,000 RWFC from insurer");
+    console.log("Funded PremiumPool with 100,000,000 RWFC from insurer");
 
     //PRINT OUT THE CONTRACT ADDRESSES NEEDED
     console.log("MockRWFC:", await mockRWFC.getAddress());

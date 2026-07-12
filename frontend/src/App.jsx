@@ -6,6 +6,7 @@ import InvestorDashboard from "./pages/InvestorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import InsurerDashboard from "./pages/InsurerDashboard";
 import NotFound from "./pages/NotFound";
+import Faucet from "./pages/Faucet";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -44,6 +45,8 @@ function App() {
                     </ProtectedRoute>
                 }
             />
+
+            <Route path="/admin/faucet" element={<Faucet />} />
 
             <Route path="*" element={<NotFound />} />
 

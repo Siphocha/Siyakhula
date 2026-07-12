@@ -19,7 +19,13 @@ module.exports = {
     },
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts: [
+        process.env.PRIVATE_KEY,          
+        process.env.PRIVATE_KEY_INSURER,    
+        process.env.PRIVATE_KEY_INVESTOR1,  
+        process.env.PRIVATE_KEY_INVESTOR2,  
+        process.env.PRIVATE_KEY_INVESTOR3   
+      ].filter(Boolean),
       chainId: 11155111,
     },
   },
