@@ -12,8 +12,9 @@ const app = express();
 
 //Securing CORS config
 const allowedOrigins = [
+    "https://siyakhula.vercel.app/", //Vercel app goes here.
     "http://localhost:5173",
-    // "https://your-frontend-domain.vercel.app" // Uncomment and add your frontend URL once deployed
+    // "https://your-frontend-domain.vercel.app" //Uncomment and add your frontend URL once deployed
 ];
 
 app.use(cors({
