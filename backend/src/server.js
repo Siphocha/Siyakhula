@@ -12,20 +12,12 @@ const app = express();
 
 //Securing CORS config
 const allowedOrigins = [
-    "https://siyakhula.vercel.app/", //Vercel app goes here....remember this man.
+    "https://siyakhula.vercel.app", //Vercel app goes here....remember this man.
     "http://localhost:5173",
-    // "https://your-frontend-domain.vercel.app" //Uncomment and add your frontend URL once deployed
 ];
 
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
+    origin: allowedOrigins,
     credentials: true
 }));
 
