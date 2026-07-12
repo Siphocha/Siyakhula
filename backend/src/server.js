@@ -12,7 +12,7 @@ const app = express();
 
 //Securing CORS config
 const allowedOrigins = [
-    "https://siyakhula.vercel.app/", //Vercel app goes here.
+    "https://siyakhula.vercel.app/", //Vercel app goes here....remember this man.
     "http://localhost:5173",
     // "https://your-frontend-domain.vercel.app" //Uncomment and add your frontend URL once deployed
 ];
