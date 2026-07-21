@@ -67,7 +67,9 @@ function InsurerDashboard() {
 
   const activePolicies = policies.filter(p => p.active && !p.paidOut).length;
   const paidOutPolicies = policies.filter(p => p.paidOut).length;
-  const totalCoverage = policies.reduce((sum, p) => sum + BigInt(p.coverageAmount), 0n);
+
+  const paidOutOnly = policies.filter(p => p.paidOut);
+  const totalCoverageIssued = paidOutOnly.reduce((sum, p) => sum + BigInt(p.coverageAmount), 0n);
 
   async function triggerPayout(policyId) {
     setProcessing(policyId);
@@ -119,7 +121,7 @@ function InsurerDashboard() {
           <div className="grid md:grid-cols-3 gap-6 mb-8">
             <StatCard title="Total Policies" value={policies.length} />
             <StatCard title="Active Policies" value={activePolicies} />
-            <StatCard title="Coverage Issued" value={`${formatWei(totalCoverage)} RWFC`} />
+            <StatCard title="Coverage Issued" value={`${formatWei(totalCoverageIssued)} RWFC`} />
           </div>
 
           <WalletConnect />
@@ -165,7 +167,7 @@ function InsurerDashboard() {
               <p><strong>Total Policies:</strong> {policies.length}</p>
               <p><strong>Active:</strong> {activePolicies}</p>
               <p><strong>Paid Out:</strong> {paidOutPolicies}</p>
-              <p><strong>Total Coverage:</strong> {formatWei(totalCoverage)} RWFC</p>
+              <p><strong>Total Coverage Issued:</strong> {formatWei(totalCoverageIssued)} RWFC</p>
             </div>
           </div>
         </>

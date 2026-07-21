@@ -5,7 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import WalletConnect from "../components/WalletConnect";
 import StatCard from "../components/StatCard";
 import { getContracts } from "../services/blockchain";
-import { formatWei, parseWei } from "../utils/helpers";
+import { formatWei } from "../utils/helpers";
 
 function InvestorDashboard() {
   const [walletAddress, setWalletAddress] = useState("");
@@ -28,7 +28,7 @@ function InvestorDashboard() {
       setWalletAddress(address);
       setIsConnected(true);
 
-      // Fetch RWFC balance – format to 2 decimals
+      // Fetch RWFC balance
       const balance = await token.balanceOf(address);
       setRwfcBalance(formatWei(balance));
 
@@ -87,7 +87,7 @@ function InvestorDashboard() {
       const { registry, token } = await getContracts();
 
       const policy = await registry.getPolicy(id);
-      const premiumAmount = policy.premiumAmount; // already in wei
+      const premiumAmount = policy.premiumAmount;
 
       const approveTx = await token.approve(registry.target, premiumAmount);
       await approveTx.wait();
@@ -105,9 +105,9 @@ function InvestorDashboard() {
 
   const activePolicies = policies.filter((p) => p.active && !p.paidOut).length;
 
-  // Sum amounts in wei using BigInt
-  const totalCoverage = policies.reduce((sum, p) => sum + BigInt(p.coverageAmount), 0n);
-  const totalPremiums = policies.reduce((sum, p) => sum + BigInt(p.premiumAmount), 0n);
+  const activeOnly = policies.filter((p) => p.active);
+  const totalCoverage = activeOnly.reduce((sum, p) => sum + BigInt(p.coverageAmount), 0n);
+  const totalPremiums = activeOnly.reduce((sum, p) => sum + BigInt(p.premiumAmount), 0n);
 
   return (
     <DashboardLayout>

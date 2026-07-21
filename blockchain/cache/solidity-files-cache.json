@@ -837,8 +837,8 @@
       ]
     },
     "/mnt/c/Users/user/Documents/Work/ALU work/Year 3/Capstone/Siyakhula/blockchain/contracts/PolicyRegistry.sol": {
-      "lastModificationDate": 1783373635426,
-      "contentHash": "6762e07e88a6617f04658182ace45bc3",
+      "lastModificationDate": 1784472692555,
+      "contentHash": "c06f864bb4c6803bedc16d54427c6cc9",
       "sourceName": "contracts/PolicyRegistry.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -880,8 +880,8 @@
       ]
     },
     "/mnt/c/Users/user/Documents/Work/ALU work/Year 3/Capstone/Siyakhula/blockchain/contracts/PremiumPool.sol": {
-      "lastModificationDate": 1784043983958,
-      "contentHash": "14675c8ad365b6ee11fae5e4eb1ecb8c",
+      "lastModificationDate": 1784634494176,
+      "contentHash": "d4d2e103bdfc1a9b4149595ad46083a6",
       "sourceName": "contracts/PremiumPool.sol",
       "solcConfig": {
         "version": "0.8.24",
