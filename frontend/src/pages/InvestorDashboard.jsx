@@ -4,10 +4,9 @@ import { ethers } from "ethers";
 import DashboardLayout from "../layouts/DashboardLayout";
 import WalletConnect from "../components/WalletConnect";
 import StatCard from "../components/StatCard";
-
 import { getContracts } from "../services/blockchain";
+import { formatWei, parseWei } from "../utils/helpers";
 
-//Remember to add more graphs to this later.
 function InvestorDashboard() {
   const [walletAddress, setWalletAddress] = useState("");
   const [policies, setPolicies] = useState([]);
@@ -29,11 +28,11 @@ function InvestorDashboard() {
       setWalletAddress(address);
       setIsConnected(true);
 
-      //Fetch RWFC balance
+      // Fetch RWFC balance – format to 2 decimals
       const balance = await token.balanceOf(address);
-      setRwfcBalance(Number(ethers.formatUnits(balance, 18)).toFixed(2));
+      setRwfcBalance(formatWei(balance));
 
-      //Fetch policies
+      // Fetch policies
       const count = await registry.getPolicyCount();
       let myPolicies = [];
 
@@ -88,7 +87,7 @@ function InvestorDashboard() {
       const { registry, token } = await getContracts();
 
       const policy = await registry.getPolicy(id);
-      const premiumAmount = policy.premiumAmount;
+      const premiumAmount = policy.premiumAmount; // already in wei
 
       const approveTx = await token.approve(registry.target, premiumAmount);
       await approveTx.wait();
@@ -106,15 +105,9 @@ function InvestorDashboard() {
 
   const activePolicies = policies.filter((p) => p.active && !p.paidOut).length;
 
-  const totalCoverage = policies.reduce(
-    (sum, p) => sum + Number(p.coverageAmount),
-    0
-  );
-
-  const totalPremiums = policies.reduce(
-    (sum, p) => sum + Number(p.premiumAmount),
-    0
-  );
+  // Sum amounts in wei using BigInt
+  const totalCoverage = policies.reduce((sum, p) => sum + BigInt(p.coverageAmount), 0n);
+  const totalPremiums = policies.reduce((sum, p) => sum + BigInt(p.premiumAmount), 0n);
 
   return (
     <DashboardLayout>
@@ -134,8 +127,8 @@ function InvestorDashboard() {
 
           <div className="grid md:grid-cols-4 gap-6 mb-8">
             <StatCard title="Active Policies" value={activePolicies} />
-            <StatCard title="Coverage" value={`${totalCoverage} RWFC`} />
-            <StatCard title="Premiums" value={`${totalPremiums} RWFC`} />
+            <StatCard title="Coverage" value={`${formatWei(totalCoverage)} RWFC`} />
+            <StatCard title="Premiums" value={`${formatWei(totalPremiums)} RWFC`} />
             <StatCard title="RWFC Balance" value={`${rwfcBalance} RWFC`} />
           </div>
 
@@ -190,10 +183,10 @@ function InvestorDashboard() {
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <p>
-                      <strong>Coverage:</strong> {policy.coverageAmount.toString()} RWFC
+                      <strong>Coverage:</strong> {formatWei(policy.coverageAmount)} RWFC
                     </p>
                     <p>
-                      <strong>Premium:</strong> {policy.premiumAmount.toString()} RWFC
+                      <strong>Premium:</strong> {formatWei(policy.premiumAmount)} RWFC
                     </p>
                     <p>
                       <strong>Trigger:</strong> {policy.triggerType}

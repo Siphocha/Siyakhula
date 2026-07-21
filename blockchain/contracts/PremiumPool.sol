@@ -4,12 +4,13 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./IPolicyRegistry.sol";   // <-- ADD THIS
 
 //This is needed to allow investment by the insurers. This will be used as a bank account in this MVP version, that does allow payouts.
 contract PremiumPool is AccessControl, ReentrancyGuard {
     bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant REGISTRY_ROLE = keccak256("REGISTRY_ROLE"); // new
+    bytes32 public constant REGISTRY_ROLE = keccak256("REGISTRY_ROLE");
 
     IERC20 public immutable stablecoin;
     address public policyRegistry;
@@ -30,12 +31,10 @@ contract PremiumPool is AccessControl, ReentrancyGuard {
     function linkPolicyRegistry(address registry) external onlyRole(ADMIN_ROLE) {
         require(registry != address(0), "invalid registry");
         policyRegistry = registry;
-        //Granting REGISTRY_ROLE in order for premiums to be granted
         _grantRole(REGISTRY_ROLE, registry);
         emit PoolLinked(registry);
     }
 
-    //the registry contract will have this role. ONLY THEM
     function recordPremium(uint256 amount) external onlyRole(REGISTRY_ROLE) {
         require(amount > 0, "amount must be >0");
         totalPremiums += amount;
@@ -49,12 +48,17 @@ contract PremiumPool is AccessControl, ReentrancyGuard {
         string calldata triggerType
     ) external onlyRole(ORACLE_ROLE) nonReentrant {
         require(stablecoin.balanceOf(address(this)) >= amount, "insufficient pool");
+
+        IPolicyRegistry registry = IPolicyRegistry(policyRegistry);
+        IPolicyRegistry.Policy memory p = registry.getPolicy(policyId);
+        require(p.active, "policy not active");
+        require(!p.paidOut, "already paid out");
+
         totalPayouts += amount;
         require(stablecoin.transfer(investor, amount), "payout transfer failed");
         emit PayoutExecuted(investor, amount, policyId, triggerType);
     }
 
-    //Some viewer functions for when we are displaying hyper specifics to the frontend
     function getPoolBalance() public view returns (uint256) {
         return stablecoin.balanceOf(address(this));
     }

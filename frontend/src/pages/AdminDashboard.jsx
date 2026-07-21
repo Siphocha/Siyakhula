@@ -4,8 +4,8 @@ import { ethers } from "ethers";
 import DashboardLayout from "../layouts/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { getContracts, getPoolStats } from "../services/blockchain";
+import { formatWei, parseWei } from "../utils/helpers";
 
-//Have to be selective with these jsx comments. Anyways policy options are stated below.
 const POLICY_TYPES = [
   { label: "Currency Devaluation Cover (RWF/USD)", value: "CURRENCY_DEV" },
   { label: "Sectoral Regulatory Ban Insurance", value: "REGULATORY_BAN" },
@@ -13,7 +13,7 @@ const POLICY_TYPES = [
 ];
 
 function AdminDashboard() {
-  const [form, setForm] = useState({ 
+  const [form, setForm] = useState({
     investor: "",
     coverageAmount: "",
     premiumAmount: "",
@@ -21,7 +21,6 @@ function AdminDashboard() {
     triggerType: POLICY_TYPES[0].value,
   });
 
-  //core stats...for now
   const [poolStats, setPoolStats] = useState({
     liquidity: "0",
     totalPremiums: "0",
@@ -36,9 +35,9 @@ function AdminDashboard() {
       try {
         const stats = await getPoolStats();
         setPoolStats({
-          liquidity: ethers.formatUnits(stats.liquidity, 18),
-          totalPremiums: ethers.formatUnits(stats.totalPremiums, 18),
-          totalPayouts: ethers.formatUnits(stats.totalPayouts, 18),
+          liquidity: formatWei(stats.liquidity),
+          totalPremiums: formatWei(stats.totalPremiums),
+          totalPayouts: formatWei(stats.totalPayouts),
           totalPolicies: "0",
         });
 
@@ -60,15 +59,19 @@ function AdminDashboard() {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  //do not make this synchronous! Otherwise it'll be a one time done deal
   async function createPolicy() {
     setLoading(true);
     try {
       const { registry } = await getContracts();
+
+      //Convert human readable amounts to wei for the sake of Sepolia!
+      const coverageWei = parseWei(form.coverageAmount);
+      const premiumWei = parseWei(form.premiumAmount);
+
       const tx = await registry.createPolicy(
         form.investor,
-        form.coverageAmount,
-        form.premiumAmount,
+        coverageWei,
+        premiumWei,
         form.triggerThresholdBps,
         form.triggerType
       );
@@ -94,14 +97,8 @@ function AdminDashboard() {
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <StatCard title="Total Policies" value={poolStats.totalPolicies} />
-        <StatCard
-          title="Pool Liquidity"
-          value={`${poolStats.liquidity} RWFC`}
-        />
-        <StatCard
-          title="Total Premiums"
-          value={`${poolStats.totalPremiums} RWFC`}
-        />
+        <StatCard title="Pool Liquidity" value={`${poolStats.liquidity} RWFC`} />
+        <StatCard title="Total Premiums" value={`${poolStats.totalPremiums} RWFC`} />
       </div>
 
       <div className="bg-white p-8 rounded-xl shadow">

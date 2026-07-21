@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IPolicyRegistry.sol";
 import "./PremiumPool.sol";
 
-//This is the meat of the application. Please god work.
+//This is the meat of the application. Please work.
 contract PolicyRegistry is
     AccessControl,
     ReentrancyGuard,
