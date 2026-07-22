@@ -6,7 +6,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const { startOracle } = require("./services/oracleService");
 
-//Postgre SQL initialisation for frontend processes.
+//Postgre SQL initialisation for frontend processes..
 require("./config/db");
 
 const app = express();
