@@ -40,3 +40,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Backend running on ${PORT}`);
 });
+
+if (process.env.ORACLE_ENABLED === 'true') {
+  startOracle();
+}

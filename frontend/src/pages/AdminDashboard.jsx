@@ -29,6 +29,8 @@ function AdminDashboard() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [oracleEnabled, setOracleEnabled] = useState(false);
+  const [oracleLoading, setOracleLoading] = useState(false);
 
   useEffect(() => {
     async function fetchStats() {
@@ -54,6 +56,23 @@ function AdminDashboard() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    async function fetchOracleStatus() {
+      try {
+        const res = await fetch("/api/admin/oracle/status", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setOracleEnabled(data.enabled);
+        }
+      } catch (err) {
+        console.error("Failed to fetch oracle status:", err);
+      }
+    }
+    fetchOracleStatus();
+  }, []);
+
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -64,7 +83,6 @@ function AdminDashboard() {
     try {
       const { registry } = await getContracts();
 
-      //Convert human readable amounts to wei for the sake of Sepolia!
       const coverageWei = parseWei(form.coverageAmount);
       const premiumWei = parseWei(form.premiumAmount);
 
@@ -91,14 +109,70 @@ function AdminDashboard() {
     }
   }
 
+  async function toggleOracle() {
+    setOracleLoading(true);
+    try {
+      const res = await fetch("/api/admin/oracle/toggle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: !oracleEnabled }),
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setOracleEnabled(data.enabled);
+        alert(`Oracle ${data.enabled ? "started" : "stopped"} successfully`);
+      } else {
+        const error = await res.json();
+        alert("Failed to toggle oracle: " + (error.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to toggle oracle: " + err.message);
+    } finally {
+      setOracleLoading(false);
+    }
+  }
+
   return (
     <DashboardLayout>
       <h1 className="text-3xl font-bold mb-8">Administrator Dashboard</h1>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
         <StatCard title="Total Policies" value={poolStats.totalPolicies} />
         <StatCard title="Pool Liquidity" value={`${poolStats.liquidity} RWFC`} />
         <StatCard title="Total Premiums" value={`${poolStats.totalPremiums} RWFC`} />
+        <StatCard title="Total Payouts" value={`${poolStats.totalPayouts} RWFC`} />
+      </div>
+
+      <div className="bg-white p-8 rounded-xl shadow mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">Oracle Control</h2>
+          <button
+            onClick={toggleOracle}
+            disabled={oracleLoading}
+            className={`px-6 py-3 rounded-lg font-semibold text-white ${
+              oracleEnabled
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-green-600 hover:bg-green-700"
+            } disabled:opacity-50`}
+          >
+            {oracleLoading
+              ? "Processing..."
+              : oracleEnabled
+              ? "Stop Oracle"
+              : "Start Oracle"}
+          </button>
+        </div>
+        <p className="text-sm text-gray-600">
+          Status:{" "}
+          <span className={oracleEnabled ? "text-green-600" : "text-red-600"}>
+            {oracleEnabled ? "Running" : "Stopped"}
+          </span>
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          The oracle automatically checks trigger conditions every 5 minutes and executes payouts when thresholds are exceeded.
+        </p>
       </div>
 
       <div className="bg-white p-8 rounded-xl shadow">
