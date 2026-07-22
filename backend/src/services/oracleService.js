@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const { ethers } = require('ethers');
-const { getContracts } = require('../config/blockchain');
+const { provider, wallet, policyRegistry, premiumPool, triggerOracle } = require('../config/blockchain');
 const {
   generateCurrencyDeviation,
   generateRegulatoryBan,
@@ -13,15 +13,13 @@ const GAS_LIMIT = parseInt(process.env.ORACLE_GAS_LIMIT) || 300000;
 
 let isOracleEnabled = ORACLE_ENABLED;
 let cronTask = null;
-const activePoliciesCache = [];
 
 async function getActivePolicies() {
-  const { registry } = await getContracts();
-  const count = await registry.getPolicyCount();
+  const count = await policyRegistry.getPolicyCount();
   const active = [];
   for (let i = 1; i <= Number(count); i++) {
     try {
-      const policy = await registry.getPolicy(i);
+      const policy = await policyRegistry.getPolicy(i);
       if (policy.active && !policy.paidOut) {
         active.push(policy);
       }
@@ -32,19 +30,19 @@ async function getActivePolicies() {
   return active;
 }
 
-async function executePayout(policyId, investor, amount, triggerType, oracleWallet) {
-  const { oracle, pool } = await getContracts(oracleWallet);
-  const tx1 = await oracle.connect(oracleWallet).submitTrigger(policyId, triggerType, 0, { gasLimit: GAS_LIMIT });
-  await tx1.wait();
-  const tx2 = await pool.connect(oracleWallet).executePayout(investor, amount, policyId, triggerType, { gasLimit: GAS_LIMIT });
-  await tx2.wait();
-  console.log(`Payout triggered for policy ${policyId} (${triggerType}) to ${investor} for ${ethers.formatUnits(amount, 18)} RWFC`);
+async function executePayout(policyId, investor, amount, triggerType) {
+  try {
+    const tx1 = await triggerOracle.submitTrigger(policyId, triggerType, 0, { gasLimit: GAS_LIMIT });
+    await tx1.wait();
+    const tx2 = await premiumPool.executePayout(investor, amount, policyId, triggerType, { gasLimit: GAS_LIMIT });
+    await tx2.wait();
+    console.log(`Payout triggered for policy ${policyId} (${triggerType}) to ${investor} for ${ethers.formatUnits(amount, 18)} RWFC`);
+  } catch (err) {
+    console.error(`Payout failed for policy ${policyId}:`, err.message);
+  }
 }
 
 async function checkTriggers() {
-  const provider = new ethers.JsonRpcProvider(process.env.ORACLE_RPC_URL);
-  const wallet = new ethers.Wallet(process.env.ORACLE_WALLET_PRIVATE_KEY, provider);
-
   const policies = await getActivePolicies();
   if (policies.length === 0) return;
 
@@ -59,7 +57,7 @@ async function checkTriggers() {
     const thresholdPercent = thresholdBps / 100;
 
     let shouldPayout = false;
-    let triggerType = policy.triggerType;
+    const triggerType = policy.triggerType;
 
     if (triggerType === 'CURRENCY_DEV' && currencyDev > thresholdPercent) {
       shouldPayout = true;
@@ -70,7 +68,7 @@ async function checkTriggers() {
     }
 
     if (shouldPayout) {
-      await executePayout(policy.id, policy.investor, policy.coverageAmount, triggerType, wallet);
+      await executePayout(policy.id, policy.investor, policy.coverageAmount, triggerType);
     }
   }
 }

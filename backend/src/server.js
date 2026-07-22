@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const { startOracle } = require("./services/oracleService");
 
 //Postgre SQL initialisation for frontend processes.
 require("./config/db");
@@ -39,8 +40,7 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Backend running on ${PORT}`);
+    if (process.env.ORACLE_ENABLED === 'true') {
+        startOracle();
+    }
 });
-
-if (process.env.ORACLE_ENABLED === 'true') {
-  startOracle();
-}
