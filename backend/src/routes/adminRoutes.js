@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate } = require('../middleware/authMiddleware');
-const { authorize } = require('../middleware/roleMiddleware');
+const authenticate = require('../middleware/authMiddleware');
+const authorize = require('../middleware/roleMiddleware');
 const { toggleOracle, getOracleStatus } = require('../controllers/adminController');
 
 router.post('/oracle/toggle', authenticate, authorize('admin'), toggleOracle);
