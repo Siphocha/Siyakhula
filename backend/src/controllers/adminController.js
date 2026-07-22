@@ -9,6 +9,11 @@ exports.toggleOracle = (req, res) => {
   res.json({ enabled: newStatus });
 };
 
+exports.toggleOracle = (req, res) => {
+  console.log('🔁 Toggle oracle called, body:', req.body);
+  //debug helperr
+};
+
 exports.getOracleStatus = (req, res) => {
   res.json(getStatus());
 };
