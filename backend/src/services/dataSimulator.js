@@ -1,27 +1,32 @@
-//WE really betting it on these educated randomisations.
+// Realistic Rwandan inflation: ~12% with occasional spikes >15%
+const BASELINE_INFLATION = 12.0;          // % (Rwanda's current inflation)
+const INFLATION_VOLATILITY = 2.0;         // standard deviation
+const UNREST_BASELINE = 50;               // base index
+const UNREST_VOLATILITY = 5;              // small fluctuations
+const REGULATORY_BAN_PROBABILITY = 0.005; // 0.5%
 
-const BASELINE_RWF_USD = 1400;
-const BASELINE_UNREST_INDEX = 50;
-const BASELINE_REGULATORY_BAN_PROBABILITY = 0.02;
-
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
+function gaussianRandom(mean = 0, stdev = 1) {
+  // Box-Muller transform
+  let u = 1 - Math.random();
+  let v = Math.random();
+  let z = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+  return z * stdev + mean;
 }
 
 function generateCurrencyDeviation() {
-  //Emulate RWF to USD
-  const deviationPercent = getRandomArbitrary(-5, 5);
-  return deviationPercent;
+  //Inflation around 12% with occasional spikes >15%
+  let inflation = gaussianRandom(BASELINE_INFLATION, INFLATION_VOLATILITY);
+  //Realistic range (5% – 20%)
+  inflation = Math.max(5, Math.min(20, inflation));
+  return inflation;
 }
 
 function generateRegulatoryBan() {
-  //Emulate regulatory random true/false with 2% probability
-  return Math.random() < BASELINE_REGULATORY_BAN_PROBABILITY;
+  return Math.random() < REGULATORY_BAN_PROBABILITY;
 }
 
 function generateCivilUnrestIndex() {
-  //Emulate unrest index: baseline ± 20% random
-  const index = BASELINE_UNREST_INDEX + getRandomArbitrary(-10, 10);
+  let index = UNREST_BASELINE + gaussianRandom(0, UNREST_VOLATILITY);
   return Math.max(0, index);
 }
 
