@@ -11,7 +11,8 @@ const ORACLE_ENABLED = process.env.ORACLE_ENABLED === 'true';
 const ORACLE_INTERVAL = process.env.ORACLE_INTERVAL || '*/5 * * * *';
 const GAS_LIMIT = parseInt(process.env.ORACLE_GAS_LIMIT) || 500000;
 
-let isOracleEnabled = ORACLE_ENABLED;
+// Start with oracle disabled (admin must click start)
+let isOracleEnabled = false;
 let cronTask = null;
 let adminRoleGranted = false;
 
@@ -115,10 +116,7 @@ function startOracle() {
     console.log('[Oracle] Already running.');
     return;
   }
-  if (!ORACLE_ENABLED) {
-    console.log('[Oracle] Disabled by environment.');
-    return;
-  }
+  // No environment check – admin toggle always works
   cronTask = cron.schedule(ORACLE_INTERVAL, runOracle);
   console.log(`[Oracle] Started with interval ${ORACLE_INTERVAL}`);
   isOracleEnabled = true;
