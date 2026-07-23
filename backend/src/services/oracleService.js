@@ -8,8 +8,8 @@ const {
 } = require('./dataSimulator');
 
 const ORACLE_ENABLED = process.env.ORACLE_ENABLED === 'true';
-const ORACLE_INTERVAL = process.env.ORACLE_INTERVAL || '*/5 * * * *'; // Default 5 minutes
-const GAS_LIMIT = parseInt(process.env.ORACLE_GAS_LIMIT) || 500000; // Increased for potential role grant
+const ORACLE_INTERVAL = process.env.ORACLE_INTERVAL || '*/5 * * * *';
+const GAS_LIMIT = parseInt(process.env.ORACLE_GAS_LIMIT) || 500000;
 
 let isOracleEnabled = ORACLE_ENABLED;
 let cronTask = null;
@@ -50,18 +50,15 @@ async function getActivePolicies() {
 
 async function executePayout(policyId, investor, amount, triggerType) {
   try {
-    //Ensuring ADMIN role is there to stop post trigger errors.
     const hasRole = await ensureAdminRole();
     if (!hasRole) {
       console.error(`[Oracle] Cannot proceed without ADMIN_ROLE for policy ${policyId}`);
       return;
     }
 
-    //Submitting Trigger
     const tx1 = await triggerOracle.submitTrigger(policyId, triggerType, 0, { gasLimit: GAS_LIMIT });
     await tx1.wait();
 
-    //Executing payout
     const tx2 = await premiumPool.executePayout(investor, amount, policyId, triggerType, { gasLimit: GAS_LIMIT });
     await tx2.wait();
 
@@ -113,12 +110,42 @@ function runOracle() {
   checkTriggers().catch(err => console.error('[Oracle] Job error:', err.message));
 }
 
+function startOracle() {
+  if (cronTask) return;
+  if (!ORACLE_ENABLED) {
+    console.log('[Oracle] Disabled by environment.');
+    return;
+  }
+  cronTask = cron.schedule(ORACLE_INTERVAL, runOracle);
+  console.log(`[Oracle] Started with interval ${ORACLE_INTERVAL}`);
+  runOracle();
+}
+
+function stopOracle() {
+  if (cronTask) {
+    cronTask.stop();
+    cronTask = null;
+    console.log('[Oracle] Stopped.');
+  }
+}
+
+function toggleOracle(enable) {
+  isOracleEnabled = enable;
+  if (enable) {
+    if (!cronTask) startOracle();
+  } else {
+    stopOracle();
+  }
+  return isOracleEnabled;
+}
+
+function getStatus() {
+  return { enabled: isOracleEnabled, running: !!cronTask };
+}
+
 module.exports = {
   startOracle,
   stopOracle,
   toggleOracle,
   getStatus,
 };
-
-
-// ... startOracle, stopOracle, toggleOracle, getStatus remain unchanged
