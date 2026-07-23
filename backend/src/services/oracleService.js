@@ -113,4 +113,12 @@ function runOracle() {
   checkTriggers().catch(err => console.error('[Oracle] Job error:', err.message));
 }
 
+module.exports = {
+  startOracle,
+  stopOracle,
+  toggleOracle,
+  getStatus,
+};
+
+
 // ... startOracle, stopOracle, toggleOracle, getStatus remain unchanged

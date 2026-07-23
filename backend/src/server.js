@@ -4,9 +4,9 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const { startOracle } = require("./services/oracleService");
+const { startOracle } = require("./services/oracleService"); // <-- ADD THIS
 
-//Postgre SQL initialisation for frontend processes..
+//Postgre SQL initialisation for frontend processes.
 require("./config/db");
 
 const app = express();
