@@ -10,7 +10,7 @@ require("./config/db");
 
 const app = express();
 
-//EXPLICIT CORS CONFIG
+//Secure CORSSSS
 const allowedOrigins = [
     "https://siyakhula.vercel.app",
     "http://localhost:5173",
@@ -18,7 +18,7 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl)
+        //Allow requests with no origin
         if (!origin) return callback(null, true);
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
@@ -31,8 +31,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-//Handle preflight OPTIONS 
-app.options('*', cors()); //Enabling for all routes
+//CORS n Middleware will handle the rest
 
 app.use(helmet());
 app.use(morgan("dev"));
@@ -46,5 +45,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Backend running on ${PORT}`);
-    //Oracle starts only when admin toggles. STOP FROM STARTING AT BOOT.
+    //Oracle starts when TRIGGERED NO LONGE AUTOED
 });
