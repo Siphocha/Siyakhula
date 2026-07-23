@@ -43,7 +43,7 @@ async function getActivePolicies() {
       if (policy.active && !policy.paidOut) {
         active.push(policy);
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) { /* ignore igggg */ }
   }
   return active;
 }
@@ -103,7 +103,7 @@ async function checkTriggers() {
 
 function runOracle() {
   if (!isOracleEnabled) {
-    console.log('[Oracle] Disabled.');
+    console.log('[Oracle] Disabled, skipping run.');
     return;
   }
   console.log('[Oracle] Job started.');
@@ -111,14 +111,18 @@ function runOracle() {
 }
 
 function startOracle() {
-  if (cronTask) return;
+  if (cronTask) {
+    console.log('[Oracle] Already running.');
+    return;
+  }
   if (!ORACLE_ENABLED) {
     console.log('[Oracle] Disabled by environment.');
     return;
   }
   cronTask = cron.schedule(ORACLE_INTERVAL, runOracle);
   console.log(`[Oracle] Started with interval ${ORACLE_INTERVAL}`);
-  runOracle();
+  isOracleEnabled = true;
+  runOracle(); // run once immediately
 }
 
 function stopOracle() {
@@ -126,13 +130,15 @@ function stopOracle() {
     cronTask.stop();
     cronTask = null;
     console.log('[Oracle] Stopped.');
+  } else {
+    console.log('[Oracle] No running task to stop.');
   }
+  isOracleEnabled = false;
 }
 
 function toggleOracle(enable) {
-  isOracleEnabled = enable;
   if (enable) {
-    if (!cronTask) startOracle();
+    startOracle();
   } else {
     stopOracle();
   }
