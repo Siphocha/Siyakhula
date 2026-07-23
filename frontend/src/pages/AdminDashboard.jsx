@@ -35,6 +35,15 @@ function AdminDashboard() {
   const [oracleLoading, setOracleLoading] = useState(false);
   const [oracleStatusError, setOracleStatusError] = useState(null);
 
+  // Helper to get auth headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
+
   useEffect(() => {
     async function fetchStats() {
       try {
@@ -65,6 +74,7 @@ function AdminDashboard() {
         const url = `${API_BASE}/api/admin/oracle/status`;
         const res = await fetch(url, {
           credentials: "include",
+          headers: getAuthHeaders(),
         });
         if (res.ok) {
           const data = await res.json();
@@ -125,7 +135,7 @@ function AdminDashboard() {
       const url = `${API_BASE}/api/admin/oracle/toggle`;
       const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ enabled: !oracleEnabled }),
         credentials: "include",
       });
