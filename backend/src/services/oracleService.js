@@ -50,7 +50,7 @@ async function getActivePolicies() {
 
 async function executePayout(policyId, investor, amount, triggerType) {
   try {
-    //Ensuring ADMIN role is there to stop post trigger errors
+    //Ensuring ADMIN role is there to stop post trigger errors.
     const hasRole = await ensureAdminRole();
     if (!hasRole) {
       console.error(`[Oracle] Cannot proceed without ADMIN_ROLE for policy ${policyId}`);
