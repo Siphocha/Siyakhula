@@ -6,6 +6,8 @@ import StatCard from "../components/StatCard";
 import { getContracts, getPoolStats } from "../services/blockchain";
 import { formatWei, parseWei } from "../utils/helpers";
 
+const API_BASE = import.meta.env.VITE_API_URL || "";
+
 const POLICY_TYPES = [
   { label: "Currency Devaluation Cover (RWF/USD)", value: "CURRENCY_DEV" },
   { label: "Sectoral Regulatory Ban Insurance", value: "REGULATORY_BAN" },
@@ -31,6 +33,7 @@ function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [oracleEnabled, setOracleEnabled] = useState(false);
   const [oracleLoading, setOracleLoading] = useState(false);
+  const [oracleStatusError, setOracleStatusError] = useState(null);
 
   useEffect(() => {
     async function fetchStats() {
@@ -59,15 +62,22 @@ function AdminDashboard() {
   useEffect(() => {
     async function fetchOracleStatus() {
       try {
-        const res = await fetch("/api/admin/oracle/status", {
+        const url = `${API_BASE}/api/admin/oracle/status`;
+        const res = await fetch(url, {
           credentials: "include",
         });
         if (res.ok) {
           const data = await res.json();
           setOracleEnabled(data.enabled);
+          setOracleStatusError(null);
+        } else {
+          const text = await res.text();
+          console.error("Oracle status fetch failed:", res.status, text);
+          setOracleStatusError(`Status ${res.status}: ${text.substring(0, 100)}`);
         }
       } catch (err) {
         console.error("Failed to fetch oracle status:", err);
+        setOracleStatusError(err.message);
       }
     }
     fetchOracleStatus();
@@ -112,7 +122,8 @@ function AdminDashboard() {
   async function toggleOracle() {
     setOracleLoading(true);
     try {
-      const res = await fetch("/api/admin/oracle/toggle", {
+      const url = `${API_BASE}/api/admin/oracle/toggle`;
+      const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: !oracleEnabled }),
@@ -123,8 +134,9 @@ function AdminDashboard() {
         setOracleEnabled(data.enabled);
         alert(`Oracle ${data.enabled ? "started" : "stopped"} successfully`);
       } else {
-        const error = await res.json();
-        alert("Failed to toggle oracle: " + (error.error || "Unknown error"));
+        const text = await res.text();
+        console.error("Toggle oracle failed:", res.status, text);
+        alert(`Failed to toggle oracle: ${res.status} ${text.substring(0, 200)}`);
       }
     } catch (err) {
       console.error(err);
@@ -169,6 +181,11 @@ function AdminDashboard() {
           <span className={oracleEnabled ? "text-green-600" : "text-red-600"}>
             {oracleEnabled ? "Running" : "Stopped"}
           </span>
+          {oracleStatusError && (
+            <span className="text-xs text-red-500 ml-2">
+              (Error: {oracleStatusError})
+            </span>
+          )}
         </p>
         <p className="text-xs text-gray-500 mt-2">
           The oracle automatically checks trigger conditions every 5 minutes and executes payouts when thresholds are exceeded.
