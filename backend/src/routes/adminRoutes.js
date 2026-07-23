@@ -9,7 +9,7 @@ router.get('/ping', (req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
-//router.post('/oracle/toggle', authenticate, authorize('admin'), toggleOracle);
-//router.get('/oracle/status', authenticate, authorize('admin'), getOracleStatus);
+router.post('/oracle/toggle', authenticate, authorize('admin'), toggleOracle);
+router.get('/oracle/status', authenticate, authorize('admin'), getOracleStatus);
 
 module.exports = router;
