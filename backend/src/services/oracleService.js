@@ -11,7 +11,6 @@ const ORACLE_ENABLED = process.env.ORACLE_ENABLED === 'true';
 const ORACLE_INTERVAL = process.env.ORACLE_INTERVAL || '*/5 * * * *';
 const GAS_LIMIT = parseInt(process.env.ORACLE_GAS_LIMIT) || 500000;
 
-// Start with oracle disabled (admin must click start)
 let isOracleEnabled = false;
 let cronTask = null;
 let adminRoleGranted = false;
@@ -57,10 +56,14 @@ async function executePayout(policyId, investor, amount, triggerType) {
       return;
     }
 
-    const tx1 = await triggerOracle.submitTrigger(policyId, triggerType, 0, { gasLimit: GAS_LIMIT });
+    // Dynamic gas price with 20% buffer
+    const feeData = await provider.getFeeData();
+    const gasPrice = feeData.gasPrice ? feeData.gasPrice * 120n / 100n : undefined;
+
+    const tx1 = await triggerOracle.submitTrigger(policyId, triggerType, 0, { gasLimit: GAS_LIMIT, gasPrice });
     await tx1.wait();
 
-    const tx2 = await premiumPool.executePayout(investor, amount, policyId, triggerType, { gasLimit: GAS_LIMIT });
+    const tx2 = await premiumPool.executePayout(investor, amount, policyId, triggerType, { gasLimit: GAS_LIMIT, gasPrice });
     await tx2.wait();
 
     console.log(`[Oracle] Payout successful for policy ${policyId}`);
@@ -116,11 +119,10 @@ function startOracle() {
     console.log('[Oracle] Already running.');
     return;
   }
-  // No environment check – admin toggle always works
   cronTask = cron.schedule(ORACLE_INTERVAL, runOracle);
   console.log(`[Oracle] Started with interval ${ORACLE_INTERVAL}`);
   isOracleEnabled = true;
-  runOracle(); // run once immediately
+  runOracle();
 }
 
 function stopOracle() {
