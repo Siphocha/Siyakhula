@@ -133,6 +133,7 @@ function AdminDashboard() {
     setOracleLoading(true);
     try {
       const url = `${API_BASE}/api/admin/oracle/toggle`;
+      console.log("Token being sent:", localStorage.getItem("token"));
       const res = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(),
