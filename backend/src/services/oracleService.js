@@ -56,7 +56,7 @@ async function executePayout(policyId, investor, amount, triggerType) {
       return;
     }
 
-    // Dynamic gas price with 20% buffer
+    // Dynamic gas pricing so the testnet doesnt get angry
     const feeData = await provider.getFeeData();
     const gasPrice = feeData.gasPrice ? feeData.gasPrice * 120n / 100n : undefined;
 
@@ -65,6 +65,9 @@ async function executePayout(policyId, investor, amount, triggerType) {
 
     const tx2 = await premiumPool.executePayout(investor, amount, policyId, triggerType, { gasLimit: GAS_LIMIT, gasPrice });
     await tx2.wait();
+
+    //Marking past policies as paid out to prevent repeated payouts
+    await policyRegistry.markPaidOut(policyId);
 
     console.log(`[Oracle] Payout successful for policy ${policyId}`);
   } catch (err) {
