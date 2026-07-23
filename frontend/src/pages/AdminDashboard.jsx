@@ -35,7 +35,6 @@ function AdminDashboard() {
   const [oracleLoading, setOracleLoading] = useState(false);
   const [oracleStatusError, setOracleStatusError] = useState(null);
 
-  // Helper to get auth headers
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
     return {
@@ -131,15 +130,20 @@ function AdminDashboard() {
 
   async function toggleOracle() {
     setOracleLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); //Timeit all out after 15s
+
     try {
       const url = `${API_BASE}/api/admin/oracle/toggle`;
-      console.log("Token being sent:", localStorage.getItem("token"));
       const res = await fetch(url, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ enabled: !oracleEnabled }),
+        signal: controller.signal,
         credentials: "include",
       });
+      clearTimeout(timeoutId);
+
       if (res.ok) {
         const data = await res.json();
         setOracleEnabled(data.enabled);
@@ -150,8 +154,13 @@ function AdminDashboard() {
         alert(`Failed to toggle oracle: ${res.status} ${text.substring(0, 200)}`);
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error(err);
-      alert("Failed to toggle oracle: " + err.message);
+      if (err.name === 'AbortError') {
+        alert('Request timed out. The oracle might still be running. Please check the status.');
+      } else {
+        alert('Failed to toggle oracle: ' + err.message);
+      }
     } finally {
       setOracleLoading(false);
     }
