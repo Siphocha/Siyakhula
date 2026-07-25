@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import api from "../services/api";
 
+//P.S: For future reference, we deleted the signup options for anything NOT investor.
 function Register() {
 
     const navigate = useNavigate();
@@ -92,14 +93,6 @@ function Register() {
 
                         <option value="investor">
                             Investor
-                        </option>
-
-                        <option value="insurer">
-                            Insurance Firm
-                        </option>
-
-                        <option value="admin">
-                            Administrator
                         </option>
 
                     </select>

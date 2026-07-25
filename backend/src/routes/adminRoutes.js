@@ -9,6 +9,7 @@ router.get('/ping', (req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
+//nevermind might not be a middeleware problem
 router.post('/oracle/toggle', authenticate, authorize('admin'), toggleOracle);
 router.get('/oracle/status', authenticate, authorize('admin'), getOracleStatus);
 
