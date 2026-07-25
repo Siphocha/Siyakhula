@@ -1,28 +1,17 @@
-import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
 import Sidebar from "../components/Sidebar";
 
 function DashboardLayout({ children }) {
+  const { user } = useAuth();
 
-    return (
-
-        <div>
-
-            <Navbar />
-
-            <div className="flex">
-
-                <Sidebar />
-
-                <main className="flex-1 p-8 bg-slate-100 min-h-screen">
-
-                    {children}
-
-                </main>
-
-            </div>
-
-        </div>
-    );
+  return (
+    <div className="flex bg-[#f0f0ea] min-h-screen">
+      <Sidebar />
+      <div className="flex-1 p-6 overflow-y-auto">
+        {children}
+      </div>
+    </div>
+  );
 }
 
 export default DashboardLayout;
