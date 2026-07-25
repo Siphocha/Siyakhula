@@ -52,7 +52,7 @@ async function executePayout(policyId, investor, amount, triggerType) {
   try {
     const hasRole = await ensureAdminRole();
     if (!hasRole) {
-      console.error(`[Oracle] Cannot proceed without ADMIN_ROLE for policy ${policyId}`);
+      console.error(`Oracle Cannot proceed without ADMIN_ROLE for policy ${policyId}`);
       return;
     }
 
@@ -69,9 +69,9 @@ async function executePayout(policyId, investor, amount, triggerType) {
     //Marking past policies as paid out to prevent repeated payouts
     await policyRegistry.markPaidOut(policyId);
 
-    console.log(`[Oracle] Payout successful for policy ${policyId}`);
+    console.log(`Oracle Payout successful for policy ${policyId}`);
   } catch (err) {
-    console.error(`[Oracle] Payout failed for policy ${policyId}:`, err.message);
+    console.error(`Oracle Payout failed for policy ${policyId}:`, err.message);
     if (err.receipt) {
       console.error('Receipt status:', err.receipt.status);
     }
@@ -86,7 +86,7 @@ async function checkTriggers() {
   const regulatoryBan = generateRegulatoryBan();
   const unrestIndex = generateCivilUnrestIndex();
 
-  console.log(`[Oracle] Deviation: ${currencyDev.toFixed(2)}% | Ban: ${regulatoryBan} | Unrest: ${unrestIndex.toFixed(2)}`);
+  console.log(`Oracle Deviation: ${currencyDev.toFixed(2)}% , Ban: ${regulatoryBan},  Unrest: ${unrestIndex.toFixed(2)}`);
 
   for (const policy of policies) {
     const thresholdBps = Number(policy.triggerThresholdBps);
