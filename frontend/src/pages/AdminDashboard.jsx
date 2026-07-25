@@ -5,7 +5,6 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { getContracts, getPoolStats } from "../services/blockchain";
 import { formatWei, parseWei } from "../utils/helpers";
-import "index.css";
 
 const API_BASE = import.meta.env.VITE_API_URL || "";
 
