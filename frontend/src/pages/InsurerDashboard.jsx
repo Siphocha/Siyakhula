@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 import WalletConnect from "../components/WalletConnect";
 import StatCard from "../components/StatCard";
@@ -110,7 +111,7 @@ function InsurerDashboard() {
   }
 
   return (
-    <div>
+    <>
       <h1 className="text-3xl font-bold mb-8 text-[#060644]">Insurer Dashboard</h1>
 
       {!isConnected ? (
@@ -128,13 +129,11 @@ function InsurerDashboard() {
 
           <WalletConnect />
 
-          {/* Marketplace placeholder */}
           <div className="bg-white p-6 rounded-xl shadow mb-6">
             <h2 className="text-xl font-bold text-[#060644] mb-2">Marketplace</h2>
             <p className="text-gray-500">Coming soon – invest in Rwandan startups and SMEs.</p>
           </div>
 
-          {/* Search & Policies */}
           <div className="bg-white mt-8 p-6 rounded-xl shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[#060644]">Issued Policies</h2>
@@ -190,7 +189,7 @@ function InsurerDashboard() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
 

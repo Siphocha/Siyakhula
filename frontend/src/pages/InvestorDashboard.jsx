@@ -96,7 +96,7 @@ function InvestorDashboard() {
   const totalPremiums = activeOnly.reduce((sum, p) => sum + BigInt(p.premiumAmount), 0n);
 
   return (
-    <div>
+    <>
       <h1 className="text-3xl font-bold mb-8 text-[#060644]">Investor Dashboard</h1>
 
       {!isConnected ? (
@@ -180,7 +180,7 @@ function InvestorDashboard() {
           )}
         </>
       )}
-    </div>
+    </>
   );
 }
 

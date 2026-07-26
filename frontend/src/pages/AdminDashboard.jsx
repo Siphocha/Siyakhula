@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
+
 import DashboardLayout from "../layouts/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { getContracts, getPoolStats } from "../services/blockchain";
@@ -15,7 +15,6 @@ const POLICY_TYPES = [
 ];
 
 function AdminDashboard() {
-  const navigate = useNavigate();
   const [form, setForm] = useState({
     investor: "",
     coverageAmount: "",
@@ -38,7 +37,6 @@ function AdminDashboard() {
   const [adminBalance, setAdminBalance] = useState("0");
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [adminEmail, setAdminEmail] = useState("");
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -71,8 +69,6 @@ function AdminDashboard() {
   };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    setAdminEmail(user.email || "Admin");
     const storedNotifs = JSON.parse(localStorage.getItem("notifications") || "[]");
     setNotifications(storedNotifs);
   }, []);
@@ -243,36 +239,21 @@ function AdminDashboard() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
-  };
-
   return (
-    <div>
+    <>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-[#060644]">Administrator Dashboard</h1>
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">{adminEmail}</span>
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="relative bg-[#060644] text-white px-4 py-2 rounded-lg hover:bg-[#1a1a5e] transition"
-          >
-            Notifications
-            {notifications.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#D3AF37] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {notifications.length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-          >
-            Logout
-          </button>
-        </div>
+        <button
+          onClick={() => setShowNotifications(!showNotifications)}
+          className="relative bg-[#060644] text-white px-4 py-2 rounded-lg hover:bg-[#1a1a5e] transition"
+        >
+          Notifications
+          {notifications.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-[#D3AF37] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {notifications.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {showNotifications && (
@@ -397,7 +378,7 @@ function AdminDashboard() {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
