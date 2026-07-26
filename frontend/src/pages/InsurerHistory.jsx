@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import DashboardLayout from "../layouts/DashboardLayout";
 import { getContracts } from "../services/blockchain";
 import { formatWei } from "../utils/helpers";
 
@@ -27,19 +26,23 @@ function InsurerHistory() {
     fetch();
   }, []);
 
-  const filtered = policies.filter(p =>
-    p.investor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.id.toString().includes(searchTerm)
-  );
+  const filtered = policies.filter(p => {
+    if (!searchTerm) return true;
+    const search = searchTerm.trim();
+    if (/^\d+$/.test(search)) {
+      return p.id.toString() === search;
+    }
+    return p.investor.toLowerCase().includes(search.toLowerCase());
+  });
 
   return (
-    <div>
+    <>
       <h1 className="text-3xl font-bold mb-8 text-[#060644]">Payout History</h1>
       <div className="bg-white p-6 rounded-xl shadow">
         <div className="flex justify-between items-center mb-4">
           <input
             type="text"
-            placeholder="Search by investor or policy ID..."
+            placeholder="Search by investor or exact policy ID..."
             className="border p-2 rounded-lg focus:ring-2 focus:ring-[#D3AF37] focus:border-transparent outline-none w-64"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -80,7 +83,7 @@ function InsurerHistory() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 

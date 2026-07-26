@@ -129,11 +129,6 @@ function InsurerDashboard() {
 
           <WalletConnect />
 
-          <div className="bg-white p-6 rounded-xl shadow mb-6">
-            <h2 className="text-xl font-bold text-[#060644] mb-2">Marketplace</h2>
-            <p className="text-gray-500">Coming soon – invest in Rwandan startups and SMEs.</p>
-          </div>
-
           <div className="bg-white mt-8 p-6 rounded-xl shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[#060644]">Issued Policies</h2>

@@ -12,13 +12,20 @@ function DashboardLayout({ children }) {
     navigate("/login");
   };
 
+  let displayName = "User";
+  if (user) {
+    if (user.role === "admin") displayName = "Admin";
+    else if (user.role === "insurer") displayName = "Insurer";
+    else if (user.role === "investor") displayName = user.email || "Investor";
+  }
+
   return (
     <div className="flex bg-[#f0f0ea] min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <header className="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200">
           <div className="text-sm text-gray-600">
-            Logged in as: <span className="font-semibold text-[#060644]">{user?.email || "User"}</span>
+            Logged in as: <span className="font-semibold text-[#060644]">{displayName}</span>
           </div>
           <button
             onClick={handleLogout}

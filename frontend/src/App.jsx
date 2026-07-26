@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import InvestorDashboard from "./pages/InvestorDashboard";
+import InvestorPolicyStatus from "./pages/InvestorPolicyStatus";
 import AdminDashboard from "./pages/AdminDashboard";
 import InsurerDashboard from "./pages/InsurerDashboard";
 import NotFound from "./pages/NotFound";
@@ -10,7 +11,6 @@ import Faucet from "./pages/Faucet";
 import PolicyHistory from "./pages/PolicyHistory";
 import InvestorHistory from "./pages/InvestorHistory";
 import InsurerHistory from "./pages/InsurerHistory";
-import Marketplace from "./pages/Marketplace";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -25,6 +25,14 @@ function App() {
         element={
           <ProtectedRoute role="investor">
             <InvestorDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/investor/policy-status"
+        element={
+          <ProtectedRoute role="investor">
+            <InvestorPolicyStatus />
           </ProtectedRoute>
         }
       />
@@ -67,14 +75,6 @@ function App() {
         element={
           <ProtectedRoute role="insurer">
             <InsurerDashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/insurer/marketplace"
-        element={
-          <ProtectedRoute role="insurer">
-            <Marketplace />
           </ProtectedRoute>
         }
       />
