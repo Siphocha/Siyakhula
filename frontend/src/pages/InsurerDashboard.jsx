@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-
 import DashboardLayout from "../layouts/DashboardLayout";
 import WalletConnect from "../components/WalletConnect";
 import StatCard from "../components/StatCard";
@@ -12,6 +11,7 @@ function InsurerDashboard() {
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [processing, setProcessing] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const hasFetched = useRef(false);
 
@@ -48,9 +48,7 @@ function InsurerDashboard() {
   }, [loading]);
 
   useEffect(() => {
-    if (!hasFetched.current) {
-      loadPolicies();
-    }
+    if (!hasFetched.current) loadPolicies();
   }, [loadPolicies]);
 
   useEffect(() => {
@@ -67,9 +65,13 @@ function InsurerDashboard() {
 
   const activePolicies = policies.filter(p => p.active && !p.paidOut).length;
   const paidOutPolicies = policies.filter(p => p.paidOut).length;
-
   const paidOutOnly = policies.filter(p => p.paidOut);
   const totalCoverageIssued = paidOutOnly.reduce((sum, p) => sum + BigInt(p.coverageAmount), 0n);
+
+  const filteredPolicies = policies.filter(p =>
+    p.investor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.id.toString().includes(searchTerm)
+  );
 
   async function triggerPayout(policyId) {
     setProcessing(policyId);
@@ -108,8 +110,8 @@ function InsurerDashboard() {
   }
 
   return (
-    <DashboardLayout>
-      <h1 className="text-3xl font-bold mb-8">Insurer Dashboard</h1>
+    <div>
+      <h1 className="text-3xl font-bold mb-8 text-[#060644]">Insurer Dashboard</h1>
 
       {!isConnected ? (
         <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg mb-6">
@@ -126,15 +128,31 @@ function InsurerDashboard() {
 
           <WalletConnect />
 
+          {/* Marketplace placeholder */}
+          <div className="bg-white p-6 rounded-xl shadow mb-6">
+            <h2 className="text-xl font-bold text-[#060644] mb-2">Marketplace</h2>
+            <p className="text-gray-500">Coming soon – invest in Rwandan startups and SMEs.</p>
+          </div>
+
+          {/* Search & Policies */}
           <div className="bg-white mt-8 p-6 rounded-xl shadow">
-            <h2 className="text-xl font-bold mb-6">Issued Policies</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-[#060644]">Issued Policies</h2>
+              <input
+                type="text"
+                placeholder="Search by investor or policy ID..."
+                className="border p-2 rounded-lg focus:ring-2 focus:ring-[#D3AF37] focus:border-transparent outline-none w-64"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
 
             {loading ? (
               <p>Loading...</p>
             ) : policies.length === 0 ? (
               <p>No policies found.</p>
             ) : (
-              policies.map((policy) => (
+              filteredPolicies.map((policy) => (
                 <div key={policy.id.toString()} className="border rounded-lg p-5 mb-5">
                   <div className="space-y-2">
                     <p><strong>ID:</strong> {policy.id.toString()}</p>
@@ -162,7 +180,7 @@ function InsurerDashboard() {
           </div>
 
           <div className="mt-8 bg-white p-6 rounded-xl shadow">
-            <h2 className="text-xl font-bold mb-4">Portfolio Summary</h2>
+            <h2 className="text-xl font-bold mb-4 text-[#060644]">Portfolio Summary</h2>
             <div className="space-y-2">
               <p><strong>Total Policies:</strong> {policies.length}</p>
               <p><strong>Active:</strong> {activePolicies}</p>
@@ -172,7 +190,7 @@ function InsurerDashboard() {
           </div>
         </>
       )}
-    </DashboardLayout>
+    </div>
   );
 }
 
