@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import registerBg from "../assets/Register.png";
 
 function Register() {
   const navigate = useNavigate();
@@ -28,8 +29,12 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-[#f0f0ea]">
-      <div className="bg-white p-8 rounded-xl shadow-xl w-[450px]">
+    <div
+      className="min-h-screen flex justify-center items-center bg-cover bg-center relative"
+      style={{ backgroundImage: `url(${registerBg})` }}
+    >
+      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="relative z-10 bg-white p-8 rounded-xl shadow-xl w-[450px]">
         <h1 className="text-3xl font-bold mb-6 text-[#060644]">Create Account</h1>
 
         <form onSubmit={submit} className="space-y-4">

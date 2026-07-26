@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import loginBg from "../assets/Login.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -27,8 +28,12 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f0f0ea]">
-      <div className="bg-white p-10 rounded-2xl shadow-xl w-[420px]">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
+      <div className="absolute inset-0 bg-black/50"></div>
+      <div className="relative z-10 bg-white p-10 rounded-2xl shadow-xl w-[420px]">
         <div className="text-center mb-8">
           <ShieldCheck size={50} className="mx-auto text-[#D3AF37]" />
           <h1 className="text-3xl font-bold mt-4 text-[#060644]">Siyakhula</h1>
