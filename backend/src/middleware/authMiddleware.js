@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 //JWT security right here. In testing feel free to change that JWT token up.
+//Update...no I did not change the JWT hahaha
 module.exports = (req, res, next) => {
 
     const token =

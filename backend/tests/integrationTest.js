@@ -80,7 +80,7 @@ async function runTests() {
         console.log(err.response?.data || err.message);
     }
 
-    // Lets check on the SQLite database.
+    //Lets check on the SQLite database.
 
     db.get(
         "SELECT * FROM users WHERE email = ?",

@@ -1,7 +1,7 @@
 const { toggleOracle: toggleOracleService, getStatus } = require('../services/oracleService');
 
 exports.toggleOracle = (req, res) => {
-  console.log('🔁 Toggle oracle called, body:', req.body);
+  console.log('Toggle oracle called, body:', req.body);
   const { enabled } = req.body;
   if (enabled === undefined) {
     return res.status(400).json({ error: 'enabled flag required' });
