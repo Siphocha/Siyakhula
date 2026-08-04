@@ -21,20 +21,19 @@ async function main() {
   const premium = ethers.parseUnits("500", 18);
   const threshold = 500;
 
-  // Get a reasonable gas price from the network
   const feeData = await ethers.provider.getFeeData();
   const gasPrice = feeData.gasPrice;
 
-  console.log("Approving registry to spend 10,000 RWFC...");
+  console.log("Approving registry to spend 10,000 RWFC! MONEY");
   await token.connect(investor).approve(registry.target, ethers.parseUnits("10000", 18));
   console.log("Approval done.\n");
 
-  console.log("📈 Pool Liquidity Growth (10 sequential purchases)\n");
+  console.log("Pool Liquidity Growth (10 sequential purchases)\n");
   console.log("Purchase # | Policy ID | Pool Balance (RWFC) | Cumulative Premiums");
 
   let cumulative = 0n;
   for (let i = 1; i <= 10; i++) {
-    // Create policy (deployer)
+    //Create policy (deployer)
     const tx1 = await registry.connect(deployer).createPolicy(
       investor.address,
       coverage,
@@ -45,7 +44,7 @@ async function main() {
     );
     const receipt1 = await tx1.wait();
 
-    // Parse event to get policy ID
+    //Parse event to get policy ID
     const event = receipt1.logs
       .map(log => {
         try {
@@ -61,7 +60,7 @@ async function main() {
       break;
     }
 
-    // Purchase (investor) – use same gas price
+    //Purchase (investor) – use same gas price
     const tx2 = await registry.connect(investor).purchasePolicy(policyId, { gasPrice: gasPrice });
     await tx2.wait();
 
@@ -71,10 +70,10 @@ async function main() {
       `  ${i}       | ${policyId}        | ${ethers.formatUnits(bal, 18)}  | ${ethers.formatUnits(cumulative, 18)}`
     );
 
-    // ✅ Add small delay to avoid nonce collisions
+    //if you dont add this there will be timeout collisions fr
     await new Promise(resolve => setTimeout(resolve, 500));
   }
-  console.log("\n✅ Load test complete.");
+  console.log("\n test complete.");
 }
 
 main().catch(console.error);

@@ -10,7 +10,7 @@ require("./config/db");
 
 const app = express();
 
-//Secure CORSSSS
+//Securig allowed communication
 const allowedOrigins = [
     "https://siyakhula.vercel.app",
     "http://localhost:5173",

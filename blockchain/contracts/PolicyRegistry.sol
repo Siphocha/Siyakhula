@@ -151,7 +151,7 @@ contract PolicyRegistry is
             "pool not set"
         );
 
-        // Use safeTransferFrom which will revert if transfer fails
+        //Use safeTransferFrom which will revert if transfer fails
         stablecoin.safeTransferFrom(
             msg.sender,
             premiumPool,

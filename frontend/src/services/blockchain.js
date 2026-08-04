@@ -13,7 +13,7 @@ export async function getContracts() {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
 
-    // Instantiate registry, pool, oracle using env addresses
+    //Instantiate registry, pool, oracle using env addresses
     const registry = new ethers.Contract(
         import.meta.env.VITE_POLICY_REGISTRY,
         PolicyRegistry.abi,

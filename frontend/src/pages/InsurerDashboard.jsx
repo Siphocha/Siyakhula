@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
-import DashboardLayout from "../layouts/DashboardLayout";
 import WalletConnect from "../components/WalletConnect";
 import StatCard from "../components/StatCard";
 import { getContracts } from "../services/blockchain";
 import { formatWei } from "../utils/helpers";
 
 function InsurerDashboard() {
-  const [walletAddress, setWalletAddress] = useState("");
+  const [setWalletAddress] = useState("");
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);

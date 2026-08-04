@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./IPolicyRegistry.sol";   // <-- ADD THIS
+import "./IPolicyRegistry.sol";   
 
 //This is needed to allow investment by the insurers. This will be used as a bank account in this MVP version, that does allow payouts.
 contract PremiumPool is AccessControl, ReentrancyGuard {

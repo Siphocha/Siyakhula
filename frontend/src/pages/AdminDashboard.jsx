@@ -230,7 +230,7 @@ function AdminDashboard() {
       clearTimeout(timeoutId);
       console.error(err);
       if (err.name === 'AbortError') {
-        alert('Request timed out. The oracle might still be running. Please check the status.');
+        alert('Request timed out. The oracle might still be running. Check it.');
       } else {
         alert('Failed to toggle oracle: ' + err.message);
       }

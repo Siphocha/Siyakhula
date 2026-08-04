@@ -25,9 +25,8 @@ async function main() {
   const premium = ethers.parseUnits("300", 18);
   const threshold = 150;
 
-  console.log("⏱️ Performance Benchmark (Sepolia)\n");
+  console.log(" Performance Benchmark\n");
 
-  // 1. Create Policy
   console.time("Create Policy");
   const tx1 = await registry.connect(deployer).createPolicy(
     investor.address,
@@ -39,7 +38,6 @@ async function main() {
   const receipt1 = await tx1.wait();
   console.timeEnd("Create Policy");
 
-  // Parse event to get policy ID
   const event = receipt1.logs
     .map(log => {
       try {
@@ -50,16 +48,16 @@ async function main() {
     })
     .find(e => e && e.name === "PolicyCreated");
   const policyId = event ? Number(event.args.policyId) : Number(await registry.getPolicyCount());
-  console.log("✅ Policy ID:", policyId);
+  console.log(" Policy ID:", policyId);
   console.log("Gas used (create):", receipt1.gasUsed.toString());
 
-  // Check investor balance & allowance
+  //Check investor balance & allowance
   const balance = await token.balanceOf(investor.address);
   const allowance = await token.allowance(investor.address, registry.target);
   console.log(`Investor balance: ${ethers.formatUnits(balance, 18)} RWFC`);
   console.log(`Allowance: ${ethers.formatUnits(allowance, 18)} RWFC`);
 
-  // 2. Approve + Purchase (investor)
+  //2. Approve + Purchase (investor)
   try {
     if (allowance < premium) {
       console.log("Approving...");
@@ -80,11 +78,9 @@ async function main() {
     const receipt2 = await ethers.provider.getTransactionReceipt(tx2.hash);
     console.log("Gas used (purchase):", receipt2.gasUsed.toString());
   } catch (err) {
-    console.error("❌ Purchase failed:", err.message);
-    // Try to get revert reason from the error
+    console.error("Purchase failed:", err.message);
     if (err.data) {
       console.log("Revert data:", err.data);
-      // Attempt to decode with the registry interface
       try {
         const decoded = registry.interface.parseError(err.data);
         if (decoded) console.log("Revert reason:", decoded.name, decoded.args);
@@ -110,7 +106,7 @@ async function main() {
     const receipt3 = await ethers.provider.getTransactionReceipt(tx3.hash);
     console.log("Gas used (payout):", receipt3.gasUsed.toString());
   } catch (err) {
-    console.error("❌ Payout failed:", err.message);
+    console.error(" Payout failed:", err.message);
     if (err.data) {
       console.log("Revert data:", err.data);
       try {
@@ -121,7 +117,7 @@ async function main() {
     return;
   }
 
-  console.log("\n✅ Benchmark complete.");
+  console.log("\n Benchmark complete.");
 }
 
 main().catch(console.error);

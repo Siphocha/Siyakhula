@@ -9,9 +9,9 @@ async function main() {
   console.log("Policy | Coverage (RWFC) | Premium (RWFC) | Ratio (%) | Target (<3%)");
 
   const testCases = [
-    { coverage: 200000, premium: 2000 },  // 1%
-    { coverage: 150000, premium: 1500 },  // 1%
-    { coverage: 100000,  premium: 1000 },  // 1%
+    { coverage: 200000, premium: 2000 },  //1%
+    { coverage: 150000, premium: 1500 },  //1%
+    { coverage: 100000,  premium: 1000 },  //1%
   ];
 
   let allPass = true;

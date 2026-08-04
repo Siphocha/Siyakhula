@@ -1,4 +1,3 @@
-// scripts/benchmark-latency-histogram.js
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
 

@@ -45,9 +45,9 @@ async function main() {
     console.log("Granted ADMIN_ROLE to insurer");
 
     //Minting test RWFC:
-    const amountInvestor = hre.ethers.parseUnits("500000", 18);      // 500,000
-    const amountDeployer = hre.ethers.parseUnits("200000000", 18);   // 200,000,000
-    const amountInsurer = hre.ethers.parseUnits("150000000", 18);    // 150,000,000
+    const amountInvestor = hre.ethers.parseUnits("500000", 18);      //500,000 COMMAS
+    const amountDeployer = hre.ethers.parseUnits("200000000", 18);   //200,000,000
+    const amountInsurer = hre.ethers.parseUnits("150000000", 18);    //150,000,000
 
     await (await mockRWFC.mint(deployer.address, amountDeployer)).wait();
     await (await mockRWFC.mint(investor1.address, amountInvestor)).wait();
